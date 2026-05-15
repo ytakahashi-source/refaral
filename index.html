@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>リファラル紹介登録 | ジョブリー建設</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+      background: #F5F4F0;
+      color: #1a1a1a;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem 4rem;
+    }
+
+    .form-wrap {
+      width: 100%;
+      max-width: 560px;
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+    }
+
+    /* ヘッダー */
+    .form-header {
+      background: #3D1508;
+      padding: 1.75rem 1.75rem 1.5rem;
+    }
+    .form-header .eyebrow {
+      font-size: 11px;
+      color: #E8855A;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .form-header h1 {
+      font-size: 20px;
+      font-weight: 600;
+      color: #FDF0EB;
+      line-height: 1.45;
+      margin-bottom: 1rem;
+    }
+    .incentive-banner {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: .75rem 1rem;
+    }
+    .incentive-banner .amount {
+      font-size: 26px;
+      font-weight: 700;
+      color: #FAC775;
+      white-space: nowrap;
+      line-height: 1;
+    }
+    .incentive-banner .label {
+      font-size: 12px;
+      color: #F5C4B3;
+      line-height: 1.6;
+    }
+    .incentive-banner .label strong {
+      display: block;
+      font-size: 13px;
+      color: #FDF0EB;
+      font-weight: 600;
+    }
+
+    /* プログレス */
+    .progress-area {
+      padding: .875rem 1.75rem;
+      background: #FAF9F7;
+      border-bottom: 1px solid #EBEBEB;
+    }
+    .progress-steps {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin-bottom: 8px;
+    }
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .step-circle {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+      transition: background .3s, color .3s;
+    }
+    .step-active .step-circle { background: #3D1508; color: #fff; }
+    .step-done .step-circle { background: #3B6D11; color: #fff; }
+    .step-inactive .step-circle { background: #E8E7E3; color: #888; }
+    .step-active .step-text { font-size: 12px; font-weight: 600; color: #1a1a1a; }
+    .step-done .step-text { font-size: 12px; font-weight: 600; color: #3B6D11; }
+    .step-inactive .step-text { font-size: 12px; color: #999; }
+    .step-line {
+      flex: 1;
+      height: 1px;
+      background: #DDDBD5;
+      margin: 0 8px;
+    }
+    .progress-bar {
+      height: 3px;
+      background: #E8E7E3;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: #3D1508;
+      border-radius: 2px;
+      transition: width .4s ease;
+    }
+
+    /* フォームボディ */
+    .form-body {
+      padding: 1.5rem 1.75rem 2rem;
+    }
+    .step-panel { display: none; }
+    .step-panel.active { display: block; }
+
+    .info-note {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      color: #666;
+      background: #F5F4F0;
+      padding: 8px 12px;
+      border-radius: 8px;
+      margin-bottom: 1.25rem;
+    }
+    .info-note svg { flex-shrink: 0; }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: .875rem;
+    }
+    @media (max-width: 480px) {
+      .field-row { grid-template-columns: 1fr; }
+    }
+    .field { margin-bottom: .875rem; }
+    .field:last-child { margin-bottom: 0; }
+
+    .field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #444;
+      margin-bottom: 5px;
+    }
+    .field label .req { color: #C0392B; margin-left: 3px; }
+    .field label .opt {
+      font-size: 11px;
+      font-weight: 400;
+      color: #999;
+      margin-left: 5px;
+      background: #F0EFE9;
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1.5px solid #DDDBD5;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #1a1a1a;
+      background: #fff;
+      transition: border-color .2s, box-shadow .2s;
+      -webkit-appearance: none;
+      appearance: none;
+      font-family: inherit;
+    }
+    .field select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%23888' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 28px;
+    }
+    .field input:focus,
+    .field select:focus {
+      outline: none;
+      border-color: #3D1508;
+      box-shadow: 0 0 0 3px rgba(61,21,8,0.1);
+    }
+    .field input::placeholder { color: #C0BEBA; }
+    .field-hint {
+      font-size: 11px;
+      color: #999;
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    /* チップ選択 */
+    .chip-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 5px;
+    }
+    .chip {
+      padding: 6px 13px;
+      border: 1.5px solid #DDDBD5;
+      border-radius: 20px;
+      font-size: 13px;
+      color: #555;
+      cursor: pointer;
+      background: #fff;
+      transition: border-color .15s, background .15s, color .15s;
+      user-select: none;
+      font-family: inherit;
+    }
+    .chip:hover { border-color: #3D1508; color: #3D1508; }
+    .chip.selected {
+      background: #FDF0EB;
+      border-color: #C0392B;
+      color: #7A1E0A;
+      font-weight: 600;
+    }
+
+    /* セクション区切り */
+    .section-divider {
+      border: none;
+      border-top: 1px solid #EBEBEB;
+      margin: 1.5rem 0;
+    }
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #888;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* 同意ボックス */
+    .consent-box {
+      background: #FAF9F7;
+      border: 1.5px solid #EBEBEB;
+      border-radius: 10px;
+      padding: 1rem;
+      margin-bottom: 1.25rem;
+    }
+    .consent-check {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .consent-check input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin-top: 1px;
+      flex-shrink: 0;
+      accent-color: #3D1508;
+      cursor: pointer;
+    }
+    .consent-check .consent-label {
+      font-size: 13px;
+      color: #555;
+      line-height: 1.6;
+    }
+    .consent-check .consent-label a {
+      color: #3D1508;
+      text-decoration: underline;
+    }
+
+    /* ボタン */
+    .btn-primary {
+      width: 100%;
+      padding: 13px;
+      background: #3D1508;
+      color: #FDF0EB;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background .2s, transform .1s;
+      font-family: inherit;
+    }
+    .btn-primary:hover { background: #521E0B; }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-primary:disabled {
+      background: #C0BEBA;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .btn-sub {
+      text-align: center;
+      font-size: 12px;
+      color: #999;
+      margin-top: 8px;
+    }
+    .btn-back {
+      background: none;
+      border: 1.5px solid #DDDBD5;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-size: 13px;
+      color: #666;
+      cursor: pointer;
+      font-family: inherit;
+      transition: border-color .2s;
+    }
+    .btn-back:hover { border-color: #999; color: #333; }
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .btn-row .btn-primary { flex: 1; }
+
+    /* 完了画面 */
+    .complete-panel {
+      text-align: center;
+      padding: 2.5rem 1.75rem;
+      display: none;
+    }
+    .complete-panel.active { display: block; }
+    .complete-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: #EAF3DE;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.25rem;
+    }
+    .complete-panel h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: .5rem;
+    }
+    .complete-panel p {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.7;
+    }
+    .complete-panel .next-step {
+      margin-top: 1.5rem;
+      background: #F5F4F0;
+      border-radius: 10px;
+      padding: 1rem;
+      font-size: 13px;
+      color: #555;
+      line-height: 1.6;
+    }
+    .complete-panel .next-step strong {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #3B6D11;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 4px;
+    }
+
+    /* 免責 */
+    .form-footer {
+      text-align: center;
+      font-size: 11px;
+      color: #AAA;
+      margin-top: 1.25rem;
+      line-height: 1.6;
+    }
+    .form-footer a { color: #999; }
+  </style>
+</head>
+<body>
+
+<div class="form-wrap">
+
+  <!-- ヘッダー -->
+  <div class="form-header">
+    <div class="eyebrow">ジョブリー建設 × 株式会社レクリー</div>
+    <h1>知人を建設業に紹介するだけ。<br>採用が決まれば謝礼をお届けします。</h1>
+    <div class="incentive-banner">
+      <div class="amount">最大 ¥50,000</div>
+      <div class="label">
+        <strong>Amazonギフト券で謝礼</strong>
+        入社・1ヶ月在籍で翌月末支払い<br>
+        登録期間：2026/05/01〜2026/10/31
+      </div>
+    </div>
+  </div>
+
+  <!-- プログレス -->
+  <div class="progress-area" id="progressArea">
+    <div class="progress-steps">
+      <div class="step" id="step-indicator-1">
+        <div class="step-circle">1</div>
+        <span class="step-text">あなたの情報</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step step-inactive" id="step-indicator-2">
+        <div class="step-circle">2</div>
+        <span class="step-text">紹介する方の情報</span>
+      </div>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill" style="width: 25%"></div>
+    </div>
+  </div>
+
+  <!-- ステップ1 -->
+  <div class="form-body">
+    <div class="step-panel active" id="panel-1">
+      <div class="info-note">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        入力は約2分で完了します
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>お名前<span class="req">*</span></label>
+          <input type="text" id="yourName" placeholder="山田 太郎" autocomplete="name">
+        </div>
+        <div class="field">
+          <label>電話番号<span class="req">*</span></label>
+          <input type="tel" id="yourPhone" placeholder="090-0000-0000" autocomplete="tel">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>メールアドレス<span class="req">*</span></label>
+        <input type="email" id="yourEmail" placeholder="taro@example.com" autocomplete="email">
+        <div class="field-hint">謝礼のご案内と登録確認をお送りします</div>
+      </div>
+
+      <div style="margin-top: 1.5rem;">
+        <button class="btn-primary" onclick="goToStep2()">
+          次へ（紹介する方の情報）
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+        <p class="btn-sub">次のステップで紹介する方の情報を入力します</p>
+      </div>
+    </div>
+
+    <!-- ステップ2 -->
+    <div class="step-panel" id="panel-2">
+
+      <div class="field-row">
+        <div class="field">
+          <label>紹介する方のお名前<span class="req">*</span></label>
+          <input type="text" id="refName" placeholder="鈴木 花子">
+        </div>
+        <div class="field">
+          <label>電話番号<span class="opt">任意</span></label>
+          <input type="tel" id="refPhone" placeholder="090-0000-0000">
+          <div class="field-hint">わからない場合は空欄で構いません</div>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>年齢<span class="req">*</span></label>
+          <select id="refAge">
+            <option value="" disabled selected>選択してください</option>
+            <option value="10s">10代</option>
+            <option value="20s">20代</option>
+            <option value="30s">30代</option>
+            <option value="40s">40代</option>
+            <option value="50s">50代</option>
+            <option value="60s+">60代以上</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>転職への意向<span class="req">*</span></label>
+          <select id="refIntent">
+            <option value="" disabled selected>選択してください</option>
+            <option value="soon">すぐにしたい</option>
+            <option value="good">良いところがあれば</option>
+            <option value="research">情報収集段階</option>
+          </select>
+        </div>
+      </div>
+
+      <hr class="section-divider">
+      <div class="section-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        職種を選択してください<span style="color: #C0392B;">*</span>
+      </div>
+
+      <div class="chip-group" id="jobChips">
+        <button type="button" class="chip" data-value="建築施工管理">建築施工管理</button>
+        <button type="button" class="chip" data-value="土木施工管理">土木施工管理</button>
+        <button type="button" class="chip" data-value="管工事施工管理">管工事施工管理</button>
+        <button type="button" class="chip" data-value="電気工事施工管理">電気工事施工管理</button>
+        <button type="button" class="chip" data-value="建築設計">建築設計</button>
+        <button type="button" class="chip" data-value="設備管理">設備管理</button>
+        <button type="button" class="chip" data-value="その他">その他</button>
+      </div>
+
+      <hr class="section-divider">
+      <div class="section-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        紹介する方との関係<span style="color: #C0392B;">*</span>
+      </div>
+
+      <div class="chip-group" id="relChips">
+        <button type="button" class="chip" data-value="友人">友人</button>
+        <button type="button" class="chip" data-value="同僚">同僚</button>
+        <button type="button" class="chip" data-value="元同僚">元同僚</button>
+        <button type="button" class="chip" data-value="家族">家族</button>
+        <button type="button" class="chip" data-value="その他">その他</button>
+      </div>
+
+      <hr class="section-divider">
+
+      <div class="consent-box">
+        <div class="consent-check">
+          <input type="checkbox" id="agreeCheck">
+          <label class="consent-label" for="agreeCheck">
+            紹介内容の正確性・ご本人の同意取得・重複登録の禁止、および
+            <a href="#terms" onclick="showTerms(event)">インセンティブ規約</a>
+            の各条件を理解し、同意します。
+          </label>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-back" onclick="goToStep1()">
+          ← 戻る
+        </button>
+        <button class="btn-primary" id="submitBtn" onclick="submitForm()" disabled>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          この内容で紹介を登録する
+        </button>
+      </div>
+      <p class="btn-sub">登録後、3営業日以内に担当者よりご連絡します</p>
+    </div>
+
+    <!-- 完了 -->
+    <div class="complete-panel" id="panel-complete">
+      <div class="complete-icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3B6D11" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h2>紹介登録が完了しました</h2>
+      <p>ご紹介いただきありがとうございます。<br>担当者より3営業日以内にご連絡いたします。</p>
+      <div class="next-step">
+        <strong>次のステップ</strong>
+        担当者が紹介内容を確認後、ご紹介先の方へのアプローチ方法をご案内します。採用・1ヶ月在籍の確認ができ次第、Amazonギフト券をお送りします。
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- 規約モーダル -->
+<div id="termsModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:100; display:none; align-items:center; justify-content:center; padding:1rem;">
+  <div style="background:#fff; border-radius:16px; max-width:480px; width:100%; max-height:80vh; overflow-y:auto; padding:1.5rem;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+      <h2 style="font-size:16px; font-weight:700;">インセンティブ規約</h2>
+      <button onclick="closeTerms()" style="background:none; border:none; font-size:20px; cursor:pointer; color:#888; line-height:1;">✕</button>
+    </div>
+    <div style="font-size:13px; color:#555; line-height:1.8;">
+      <p style="margin-bottom:.75rem;"><strong>支払い条件</strong><br>
+      紹介された方が当社経由で入社し、1ヶ月在籍した場合に翌月末日にAmazonギフト券をお送りします。</p>
+      <p style="margin-bottom:.75rem;"><strong>対象外となる場合</strong><br>
+      ・紹介された方が過去に当社サービスへ登録・接触履歴がある場合<br>
+      ・不正または制度趣旨に反すると当社が判断した場合<br>
+      ・同一人物の重複登録や虚偽申請の場合</p>
+      <p style="margin-bottom:.75rem;"><strong>登録情報</strong><br>
+      本フォームで登録された情報をもとに紹介者を確定します。後からの変更はできません。</p>
+      <p style="margin-bottom:.75rem;"><strong>他制度との併用</strong><br>
+      本キャンペーンは他のキャンペーン・インセンティブ制度との併用はできません。重複する場合は当社が適用内容を決定します。</p>
+      <p><strong>謝礼の性質</strong><br>
+      本インセンティブは紹介行為への謝礼であり、転職成功の対価ではありません。</p>
+    </div>
+    <button onclick="closeTerms()" style="width:100%; margin-top:1.25rem; padding:11px; background:#3D1508; color:#FDF0EB; border:none; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer;">閉じる</button>
+  </div>
+</div>
+
+<!-- hidden iframe + form: CORS を完全回避する送信方式 -->
+<iframe name="gas_sink" id="gas_sink" style="display:none;" onload="onIframeLoad()"></iframe>
+<form id="gasForm"
+      method="POST"
+      target="gas_sink"
+      style="display:none;">
+  <input type="hidden" name="yourName">
+  <input type="hidden" name="yourPhone">
+  <input type="hidden" name="yourEmail">
+  <input type="hidden" name="refName">
+  <input type="hidden" name="refPhone">
+  <input type="hidden" name="refAge">
+  <input type="hidden" name="refJob">
+  <input type="hidden" name="refRel">
+  <input type="hidden" name="refIntent">
+  <input type="hidden" name="agree" value="同意済み">
+</form>
+
+<p class="form-footer">
+  このフォームはジョブリー建設（株式会社レクリー）のリファラル専用フォームです。<br>
+  お問い合わせは担当者までご連絡ください。
+</p>
+
+<script>
+  // ============================================================
+  //  GAS URL: 「全員」アクセスで再デプロイ後に更新してください
+  //  NG: https://script.google.com/a/macros/recree.page/s/.../exec
+  //  OK: https://script.google.com/macros/s/.../exec
+  // ============================================================
+  var GAS_URL = 'https://script.google.com/macros/s/AKfycbyfocGeAJu5dPXDhT6cUx9zT53dGl5_g5K_5IsCBTEDRvimGOEfASmEpCmRvlJv2eWA/exec';
+  // ============================================================
+
+  var selectedJob = '';
+  var selectedRel = '';
+  var submitPending = false;
+
+  // gasForm の action を設定
+  document.getElementById('gasForm').action = GAS_URL;
+
+  document.querySelectorAll('#jobChips .chip').forEach(function(chip) {
+    chip.addEventListener('click', function() {
+      document.querySelectorAll('#jobChips .chip').forEach(function(c) { c.classList.remove('selected'); });
+      this.classList.add('selected');
+      selectedJob = this.dataset.value;
+    });
+  });
+
+  document.querySelectorAll('#relChips .chip').forEach(function(chip) {
+    chip.addEventListener('click', function() {
+      document.querySelectorAll('#relChips .chip').forEach(function(c) { c.classList.remove('selected'); });
+      this.classList.add('selected');
+      selectedRel = this.dataset.value;
+    });
+  });
+
+  document.getElementById('agreeCheck').addEventListener('change', function() {
+    document.getElementById('submitBtn').disabled = !this.checked;
+  });
+
+  // iframe の load イベント = GAS が応答を返した = 送信成功
+  function onIframeLoad() {
+    if (!submitPending) return; // 初期ロード時は無視
+    submitPending = false;
+    showComplete();
+  }
+
+  function goToStep2() {
+    var name  = document.getElementById('yourName').value.trim();
+    var phone = document.getElementById('yourPhone').value.trim();
+    var email = document.getElementById('yourEmail').value.trim();
+
+    if (!name || !phone || !email) {
+      alert('すべての項目を入力してください。');
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      alert('メールアドレスの形式が正しくありません。');
+      return;
+    }
+
+    document.getElementById('panel-1').classList.remove('active');
+    document.getElementById('panel-2').classList.add('active');
+    document.getElementById('progressFill').style.width = '75%';
+    var ind1 = document.getElementById('step-indicator-1');
+    ind1.className = 'step step-done';
+    ind1.querySelector('.step-circle').textContent = '✓';
+    document.getElementById('step-indicator-2').className = 'step step-active';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function goToStep1() {
+    document.getElementById('panel-2').classList.remove('active');
+    document.getElementById('panel-1').classList.add('active');
+    document.getElementById('progressFill').style.width = '25%';
+    document.getElementById('step-indicator-1').className = 'step step-active';
+    document.getElementById('step-indicator-1').querySelector('.step-circle').textContent = '1';
+    document.getElementById('step-indicator-2').className = 'step step-inactive';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function submitForm() {
+    var refName   = document.getElementById('refName').value.trim();
+    var refPhone  = document.getElementById('refPhone').value.trim();
+    var refAge    = document.getElementById('refAge').value;
+    var refIntent = document.getElementById('refIntent').value;
+
+    if (!refName || !refAge || !refIntent || !selectedJob || !selectedRel) {
+      alert('すべての必須項目を入力・選択してください。');
+      return;
+    }
+
+    var btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.innerHTML = '送信中...';
+
+    // hidden form のフィールドに値をセット
+    var form = document.getElementById('gasForm');
+    var inputs = form.querySelectorAll('input[type="hidden"]');
+    var data = {
+      yourName:  document.getElementById('yourName').value.trim(),
+      yourPhone: document.getElementById('yourPhone').value.trim(),
+      yourEmail: document.getElementById('yourEmail').value.trim(),
+      refName:   refName,
+      refPhone:  refPhone,
+      refAge:    refAge,
+      refJob:    selectedJob,
+      refRel:    selectedRel,
+      refIntent: refIntent,
+      agree:     '同意済み'
+    };
+    inputs.forEach(function(input) {
+      if (data[input.name] !== undefined) input.value = data[input.name];
+    });
+
+    // iframe をターゲットにして POST 送信（CORS 完全回避）
+    submitPending = true;
+    form.submit();
+
+    // GAS が 302 リダイレクトを返すため iframe の load が
+    // 発火しないケースがある → 3秒後に強制的に完了画面へ
+    setTimeout(function() {
+      if (submitPending) {
+        submitPending = false;
+        showComplete();
+      }
+    }, 3000);
+  }
+
+  function showComplete() {
+    document.getElementById('panel-2').classList.remove('active');
+    document.getElementById('progressArea').style.display = 'none';
+    document.getElementById('panel-complete').classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function showTerms(e) {
+    e.preventDefault();
+    document.getElementById('termsModal').style.display = 'flex';
+  }
+
+  function closeTerms() {
+    document.getElementById('termsModal').style.display = 'none';
+  }
+</script>
+
+</body>
+</html>
